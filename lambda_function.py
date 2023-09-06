@@ -27,6 +27,7 @@ try:
 except:
   where=1
 print(where)
+
 def keywords(id):
     word=''
     key_url='https://www.imdb.com/title/tt'+id+'/keywords/'
@@ -40,6 +41,7 @@ def keywords(id):
     #print('keyword')
     return word[2:len(word)]
 
+#release date function
 def release_info(soup):
    date='NaN'
    x= soup.find_all('li',class_='ipc-metadata-list__item ipc-metadata-list-item--link')
@@ -49,7 +51,7 @@ def release_info(soup):
        break
    return date
 
-
+# runtime fuction
 def runtime(soup):
  runtime_test=soup.find_all('li',class_='ipc-metadata-list__item')
  color='NaN'
@@ -115,12 +117,8 @@ def lambda_handler(event, context):
        continue
       print(i,w_url,'<< processing')
       Title=soup.find('span',class_='sc-afe43def-1 fDTGTb').text
-      try:
-       storyline=soup.find_all('div',class_='ipc-html-content-inner-div')[2].text
-      except:
-       storyline='NaN'
       Director=soup.find_all('a',class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link')[0].text
-      Date=release_info(id_)
+      Date=release_info(soup)
  
       Runtime_,colr=runtime(soup)
       try:
@@ -134,7 +132,7 @@ def lambda_handler(event, context):
       df['Id'].append(id_)
       df['Link'].append(w_url)
       df['Title'].append(Title)
-      df['Storyline'].append(storyline)
+      
       df['Director'].append(Director)
       df['Genres'].append(genere_fun(soup))
       df['Date'].append(Date)
