@@ -40,21 +40,14 @@ def keywords(id):
     #print('keyword')
     return word[2:len(word)]
 
-def release_info(id):
-    key_url='https://www.imdb.com/title/tt'+id+'/releaseinfo/'
-    #https://www.imdb.com/title/tt'+id_+'/'
-    response_release_info=requests.get(key_url,headers=headers)
-    content_release_info=response_release_info.content
-    soup_release_info=BeautifulSoup(content_release_info,'html.parser')
-    date=soup_release_info.find('span',class_='ipc-metadata-list-item__list-content-item')
-    try:
-       soup_release_info.find('article',class_='sc-8eb80a87-0 hQQXzj').text is not None
-       #print('release info')
-       return 'NaN'
-
-    except:
-       #print('release info')
-       return date.text
+def release_info(soup):
+   date='NaN'
+   x= soup.find_all('li',class_='ipc-metadata-list__item ipc-metadata-list-item--link')
+   for r in x:
+      if 'Release date' in r.text:
+       date=r.text.replace('Release date','')
+       break
+   return date
 
 
 def runtime(soup):
