@@ -6,27 +6,16 @@ from bs4 import BeautifulSoup
 import boto3
 import time
 
+where=13616368
+
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
 }
 
-s3 = boto3.client('s3')
-bucket_name='imdbucket'
-file_key = 'imdb.csv'
-#path='D:\Jovian data\data analysis projects\IMDB\imdb.csv'
-obj = s3.get_object(Bucket=bucket_name, Key=file_key)
-csv_content = obj['Body'].read()
-print(csv_content)
-#df = pd.read_csv(io.BytesIO(csv_content))
 
 
-try:
-    #load_df = pd.read_csv(path,sep=';')
-    load_df=pd.read_csv(io.BytesIO(csv_content))
-    where=load_df['Id'].iloc[-1]+1
-except:
-  where=1
-print(where)
+
+
 
 def keywords(id):
     word=''
@@ -103,7 +92,7 @@ df={'Id':[],'Title':[],'Storyline':[],'Genres':[],'Director':[],'Date':[],'Runti
 def lambda_handler(event, context):
     i=1
     start_time=time.time()
-    for num in range(where,100000000):
+    for num in range(where,where-50000,-1):
       len_num=7-len(str(num))
       id_='0'*len_num+str(num)
       w_url='https://www.imdb.com/title/tt'+id_+'/'
@@ -140,27 +129,22 @@ def lambda_handler(event, context):
       df['Color'].append(colr)
       df['Rating'].append(Rating)
       df['keywords'].append(key_words)
-      if i==100:
-       try:
-        main_df=pd.DataFrame(df)
-        save_df=pd.concat([load_df, main_df], ignore_index=True)
-        save_df.to_csv(path,index=False,sep=';',header=True)
-        load_df = pd.read_csv(path,sep=';')
-        print('>>',load_df.shape)
-        df={'Id':[],'Link':[],'Title':[],'Storyline':[],'Director':[],'Date':[],'Runtime':[],'Rating':[],'Color':[],'Country':[],'keywords':[]}
-        end_time=time.time()
-        print('>>Time', (end_time-start_time)/100)
-        start_time=time.time()
-       except:
-          main_df=pd.DataFrame(df)
-          save_df=main_df
-          save_df.to_csv(path,index=False,sep=';',header=True)
-          load_df = pd.read_csv(path,sep=';')
-          print('>>',load_df.shape)
-          df={'Id':[],'Link':[],'Title':[],'Storyline':[],'Director':[],'Date':[],'Runtime':[],'Rating':[],'Color':[],'Country':[],'keywords':[]}
-          print('File not found Solved')
-       i=1
+      main_df=pd.DataFrame(df)
     
+    csv_buffer = StringIO()
+    main_df.to_csv(csv_buffer, index=False)
+    csv_data = csv_buffer.getvalue() 
+
+    s3 = boto3.client('s3')
+     # Specify the S3 bucket and object key
+
+    bucket_name = 'imdbucket'
+    object_key = 'imdb2.csv'
+
+    # Upload the data to S3
+    s3.put_object(Bucket=bucket_name, Key=object_key, Body=scraped_data)
+
+
     return {
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')
