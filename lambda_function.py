@@ -87,7 +87,7 @@ def genere_fun(soup):
 
 
 
-df={'Id':[],'Title':[],'Storyline':[],'Genres':[],'Director':[],'Date':[],'Runtime':[],'Rating':[],'Color':[],'Country':[],'keywords':[]}
+df={'Id':[],'Link':[],'Title':[],'Storyline':[],'Genres':[],'Director':[],'Date':[],'Runtime':[],'Rating':[],'Color':[],'Country':[],'keywords':[]}
 
 def lambda_handler(event, context):
     i=1
@@ -129,7 +129,8 @@ def lambda_handler(event, context):
       df['Color'].append(colr)
       df['Rating'].append(Rating)
       df['keywords'].append(key_words)
-      main_df=pd.DataFrame(df)
+    
+    main_df=pd.DataFrame(df)
     
     csv_buffer = StringIO()
     main_df.to_csv(csv_buffer, index=False)
