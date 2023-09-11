@@ -107,7 +107,10 @@ for num in range(where,where-50000,-1):
        continue
       print(i,w_url,'<< processing')
       Title=soup.find('span',class_='sc-afe43def-1 fDTGTb').text
-      Director=soup.find_all('a',class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link')[0].text
+      try:
+       Director=soup.find_all('a',class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link')[0].text
+      except:
+        Director=' '
       Date=release_info(soup)
  
       Runtime_,colr=runtime(soup)
