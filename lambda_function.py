@@ -56,17 +56,12 @@ def runtime(soup):
 #Country fuction
 
 def country(soup):
-    r_items = soup.find_all('a', class_='ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link')
-    inde=0
-    for r in r_items:
+    country_name='NaN'
+    for t in soup.find_all('li', class_='ipc-metadata-list__item'):
+     if 'Country of origin' in t.text:
+      country_name=t.text.replace('Country of origin','')
 
-      if r.text == 'None':
-        country_name= r_items[inde-1].text
-        break
-      else:
-        country_name='NaN'
-      inde=inde+1
-    #print('country')
+
     return country_name
 
 movie_genres = ["Action","Adventure","Comedy","Drama","Horror","Science Fiction (Sci-Fi)","Fantasy","Romance","Mystery","Crime","Thriller","Animation","Musical","War","Western","Biography","Historical",
@@ -83,16 +78,22 @@ def genere_fun(soup):
   return gen_list 
  except:
   return 'NaN'
+
+def cast(soup):
+    div_elements=soup.find_all('a',class_='sc-bfec09a1-1 fUguci')
+    list=[element.text for element in div_elements]
+    if len(list)>4:
+        return list[0:6]
+    else:
+     return list
+
     
 
+df={'Id':[],'Title':[],'Storyline':[],'Genres':[],'Director':[],'Cast':[],'Date':[],'Runtime':[],'Rating':[],'Color':[],'Country':[],'keywords':[]}
 
-
-df={'Id':[],'Link':[],'Title':[],'Storyline':[],'Genres':[],'Director':[],'Date':[],'Runtime':[],'Rating':[],'Color':[],'Country':[],'keywords':[]}
-
-def lambda_handler(event, context):
-    i=1
-    start_time=time.time()
-    for num in range(where,where-50000,-1):
+i=1
+start_time=time.time()
+for num in range(where,where-50000,-1):
       len_num=7-len(str(num))
       id_='0'*len_num+str(num)
       w_url='https://www.imdb.com/title/tt'+id_+'/'
@@ -121,7 +122,7 @@ def lambda_handler(event, context):
       df['Id'].append(id_)
       df['Link'].append(w_url)
       df['Title'].append(Title)
-      
+      df['Cast'].append(cast(soup))
       df['Director'].append(Director)
       df['Genres'].append(genere_fun(soup))
       df['Date'].append(Date)
@@ -130,23 +131,19 @@ def lambda_handler(event, context):
       df['Rating'].append(Rating)
       df['keywords'].append(key_words)
     
-    main_df=pd.DataFrame(df)
+main_df=pd.DataFrame(df)
     
-    csv_buffer = StringIO()
-    main_df.to_csv(csv_buffer, index=False)
-    csv_data = csv_buffer.getvalue() 
+csv_buffer = StringIO()
+main_df.to_csv(csv_buffer, index=False)
+csv_data = csv_buffer.getvalue() 
 
-    s3 = boto3.client('s3')
-     # Specify the S3 bucket and object key
+s3 = boto3.client('s3')
+# Specify the S3 bucket and object key
 
-    bucket_name = 'imdbucket'
-    object_key = 'imdb2.csv'
+bucket_name = 'imdbucket'
+object_key = 'imdb2.csv'
 
     # Upload the data to S3
-    s3.put_object(Bucket=bucket_name, Key=object_key, Body=scraped_data)
+s3.put_object(Bucket=bucket_name, Key=object_key, Body=scraped_data)
 
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
