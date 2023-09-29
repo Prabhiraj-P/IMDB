@@ -30,7 +30,7 @@ The code defines several functions to extract information from IMDb movie pages.
 
 # Initializing DataFrame:
 
-```df = {'Id': [], 'Title': [], 'Storyline': [], 'Genres': [], 'Director': [], 'Cast': [], 'Date': [], 'Runtime': [],'Rating': [], 'Color': [], 'Country': [], 'Keywords': []}
+```df = {'Id': [], 'Title': [], 'Storyline': [], 'Genres': [], 'Director': [], 'Cast': [], 'Date': [], 'Runtime': [],'Rating': [], 'Color': [], 'Country': [], 'Keywords': []}```
 This initializes an empty dictionary df that will be used to create a Pandas DataFrame to store scraped data.
 
 # Main Scraping Loop:
