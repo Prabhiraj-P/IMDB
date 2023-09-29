@@ -18,10 +18,11 @@ where = 13616368
 where is the starting IMDb ID for the movies to be scraped.
 
 User-Agent Header:
-
-```headers = {
+```
+headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-}```
+}
+```
 <br>
 
 This defines a user-agent header to mimic a web browser when making requests to IMDb. This can help avoid being blocked by anti-scraping measures.
@@ -36,6 +37,7 @@ The code defines several functions to extract information from IMDb movie pages.
 This initializes an empty dictionary df that will be used to create a Pandas DataFrame to store scraped data.
 
 # Main Scraping Loop:
+```
 for num in range(where, where - 50000, -1):
     # ...
     # The main loop iterates through a range of IMDb IDs, sending requests to IMDb for each movie's webpage.
@@ -44,21 +46,33 @@ for num in range(where, where - 50000, -1):
 
 main_df = pd.DataFrame(df)
 csv_data = main_df.to_csv(index=False)
+```
+<br>
+
 This part creates a Pandas DataFrame from the scraped data and converts it to a CSV format.
 
 # Uploading to AWS S3:
+```
 
 s3 = boto3.client('s3')
 bucket_name = 'imdbucket'
 object_key = 'imdb2.csv'
 s3.put_object(Bucket=bucket_name, Key=object_key, Body=csv_data)
-Here, the script uses the boto3 library to interact with AWS S3. It uploads the CSV data to an S3 bucket named 'imdbucket' with the object key 'imdb2.csv'.
+```
+<br>
+Here, the script uses the boto3 library to interact with AWS S3. It uploads the CSV data to an S3 bucket named <br> 'imdbucket' with the object key 'imdb2.csv'.
 
 # Execution Time Calculation:
+```
 end_time = time.time()
 execution_time = end_time - start_time
 print(f"Execution Time: {execution_time} seconds")
+```
+<br>
 The code calculates and prints the execution time of the entire script.
 
 Summary:
-In summary, this code is a Python script that scrapes IMDb movie data, including details like movie titles, cast, release dates, and more, for a range of IMDb IDs. It stores this data in a Pandas DataFrame, converts it to a CSV file, and uploads it to an AWS S3 bucket. This script can be useful for collecting IMDb movie data for analysis or research purposes.
+In summary, this code is a Python script that scrapes IMDb movie data, including details like movie titles,<br>
+cast, release dates, and more, for a range of IMDb IDs. It stores this data in a Pandas DataFrame, converts <br>
+it to a CSV file, and uploads it to an AWS S3 bucket. This script can be useful for collecting IMDb movie data <br>
+for analysis or research purposes.
