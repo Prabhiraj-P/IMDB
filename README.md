@@ -18,10 +18,10 @@ where = 13616368
 where is the starting IMDb ID for the movies to be scraped.
 
 User-Agent Header:
-
+```
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-}
+}```
 This defines a user-agent header to mimic a web browser when making requests to IMDb. This can help avoid being blocked by anti-scraping measures.
 
 Scraping Functions:
